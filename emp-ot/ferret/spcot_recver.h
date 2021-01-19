@@ -86,8 +86,13 @@ public:
 			nodes_sum = nodes_sum ^ ggm_tree[i];
 		ggm_tree[to_fill_idx] = nodes_sum ^ sum;
 		if(depth == this->depth-1) return;
-		for(int i = item_n-2; i >= 0; i-=2)
-			prp->node_expand_2to4(&ggm_tree[i*2], &ggm_tree[i]);
+		if(depth < 4)
+			for(int i = item_n-2; i >= 0; i-=2)
+				prp->node_expand_double<2>(&ggm_tree[i * 2], &ggm_tree[i]);
+				//prp->node_expand_2to4(&ggm_tree[i*2], &ggm_tree[i]);
+		else
+			for (int i = item_n - 8; i >= 0; i -= 8)
+				prp->node_expand_double_vaes<4>(&ggm_tree[i*2], &ggm_tree[i]);
 	}
 
 	void consistency_check_msg_gen(block *chi_alpha, block *W) {

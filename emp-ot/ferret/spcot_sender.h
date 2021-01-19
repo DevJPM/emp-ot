@@ -67,13 +67,26 @@ class SPCOT_Sender { public:
 		for(int h = 1; h < depth-1; ++h) {
 			ot_msg_0[h] = ot_msg_1[h] = zero_block;
 			int sz = 1<<h;
-			for(int i = sz-2; i >=0; i-=2) {
-				prp->node_expand_2to4(&ggm_tree[i*2], &ggm_tree[i]);
-				ot_msg_0[h] = ot_msg_0[h] ^ ggm_tree[i*2];
-				ot_msg_0[h] = ot_msg_0[h] ^ ggm_tree[i*2+2];
-				ot_msg_1[h] = ot_msg_1[h] ^ ggm_tree[i*2+1];
-				ot_msg_1[h] = ot_msg_1[h] ^ ggm_tree[i*2+3];
+			if (h < 4) {
+				for (int i = sz - 2; i >= 0; i -= 2) {
+					prp->node_expand_2to4(&ggm_tree[i * 2], &ggm_tree[i]);
+					ot_msg_0[h] = ot_msg_0[h] ^ ggm_tree[i * 2];
+					ot_msg_0[h] = ot_msg_0[h] ^ ggm_tree[i * 2 + 2];
+					ot_msg_1[h] = ot_msg_1[h] ^ ggm_tree[i * 2 + 1];
+					ot_msg_1[h] = ot_msg_1[h] ^ ggm_tree[i * 2 + 3];
+				}
 			}
+			else {
+				for (int i = sz - 8; i >= 0; i -= 8) {
+					prp->node_expand_double_vaes<4>(&ggm_tree[i * 2], &ggm_tree[i]);
+					for (int z = 0; z < 16; z += 2)
+					{
+						ot_msg_0[h] = ot_msg_0[h] ^ ggm_tree[i * 2 + z];
+						ot_msg_1[h] = ot_msg_1[h] ^ ggm_tree[i * 2 + z + 1];
+					}
+				}
+			}
+			
 		}
 		delete prp;
 	}

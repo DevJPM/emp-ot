@@ -4,7 +4,7 @@
 
 namespace emp {
 
-const static int ot_bsize = 8;
+const static int ot_bsize = 16;
 template<typename T>
 class COT : public OT<T>{ public:
 	T * io = nullptr;
